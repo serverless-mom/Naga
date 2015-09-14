@@ -11,6 +11,10 @@
     "bot",
     "markov"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tobyfee/Naga.git"
+  },
   "author": "Toby Fee",
   "license": "ISC",
   "devDependencies": {

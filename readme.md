@@ -15,9 +15,13 @@ faves tweets more distantly in the past.
 
 ## milestones:
 
-~~Make an app that can authenticate and send command to the Twitter api~~
-~~get some search results of users/tweets~~
-Gulp to test this
-turn those search results into a nice orderly array of ID's
+* ~~Make an app that can authenticate and send command to the Twitter api~~
+
+* ~~get some search results of users/tweets~~
+
+* Gulp to test this
+
+* turn those search results into a nice orderly array of ID's
 follow those ID's
-store what was followed (liteweight Redis?, just plaintext?)
+
+* store what was followed (liteweight Redis?, just plaintext?)

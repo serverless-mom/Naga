@@ -1,0 +1,20 @@
+{
+  "name": "chatterbox",
+  "version": "1.0.0",
+  "description": "bot for Twitter!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "twitter",
+    "bot",
+    "markov"
+  ],
+  "author": "Toby Fee",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-shell": "^0.4.3"
+  }
+}

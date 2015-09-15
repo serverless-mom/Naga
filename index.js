@@ -11,7 +11,7 @@ var twit = new Twit({
 randPage = randomInt(1,33);
 
 //set to
-twit.get('users/search', { q: 'node', page: randPage, count: 1 },
+twit.get('users/search', { q: 'node', page: randPage, count: 2 },
 function (err, data, response) {
   console.log(data)
 })

@@ -14,11 +14,15 @@ var twit = new Twit({
 randPage = randomInt(1,100)
 
 //set to
-twit.get('users/search', { q: 'node', page: randPage, count: 5},
+twit.get('users/search', { q: 'node', page: randPage, count: 1},
 function (err, data, response) {
   data.forEach(function LogArrayElements(element, index, array){
     console.log(element.id)
     console.log(element.name)
+    twit.post('friendships/create', { id: element.id }, function (err, data, response) {
+      console.log(data)
+      
+    })
   })
 })
 

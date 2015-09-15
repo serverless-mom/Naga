@@ -1,5 +1,8 @@
 var Twit = require('twit')
 
+//for debuggery. Leaving it in for now....
+var util = require('util')
+
 var twit = new Twit({
     consumer_key: '5TPBcByMWyyEjORB6of9X3O5U'
   , consumer_secret: 'wfE5YR1KlBKbszEEhSbAig9w5hvLLjjWdeED2JbaDY6pK0mgEI'
@@ -8,12 +11,15 @@ var twit = new Twit({
 })
 
 //generate a random 'page' to view
-randPage = randomInt(1,33);
+randPage = randomInt(1,100)
 
 //set to
-twit.get('users/search', { q: 'node', page: randPage, count: 2 },
+twit.get('users/search', { q: 'node', page: randPage, count: 5},
 function (err, data, response) {
-  console.log(data)
+  data.forEach(function LogArrayElements(element, index, array){
+    console.log(element.id)
+    console.log(element.name)
+  })
 })
 
 

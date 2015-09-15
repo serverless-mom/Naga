@@ -21,7 +21,7 @@ faves tweets more distantly in the past.
 
 * ~~Gulp to test this~~
 
-* turn those search results into a nice orderly array of ID's
+* ~~turn those search results into a nice orderly array of ID's~~
 
 * follow those ID's
 

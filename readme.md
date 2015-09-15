@@ -23,7 +23,11 @@ faves tweets more distantly in the past.
 
 * ~~turn those search results into a nice orderly array of ID's~~
 
-* follow those ID's
+* ~~find their last 10 or so random tweets~~
+
+* Like a tweet by that person that already has likes - this should be working but I'm not seeing it work.. what gives...
+
+* ~~follow those ID's~~
 
 * store what was followed (liteweight Redis?, just plaintext?)
 

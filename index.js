@@ -1,45 +1,80 @@
 var Twit = require('twit')
-//for debuggery. Leaving it in for now....
-var util = require('util')
-
+var fs = require("fs")
+var sqlite3 = require("sqlite3").verbose()
 var config = require('./config.js')
 var twit = new Twit(config)
 
+var keyword = 'node'
 //generate a random 'page' to view
-randPage = randomInt(1,100)
+var randPage = randomInt(1,100)
+var file = "test.db"
+var exists = fs.existsSync(file)
+var db = new sqlite3.Database(file)
 
-//set to
+if(!exists) {
+  console.log("Creating DB file.")
+  fs.openSync(file, "w")
+}
 
-twit.get('users/search', { q: 'node', page: randPage, count: 5},
-function (err, data, response) {
-  data.forEach(function LogUsers(user, index, array){
-    console.log(user.id)
-    console.log(user.name)
-    twit.get('statuses/user_timeline', { id: user.id_str, count: 2, include_rts: true, include_replies: true },
-      function (err, data, response){
-        //console.log(data)
-        data.forEach(function FaveWhatsFaved(tweet){
-          //only fave things that
+var sqlite3 = require("sqlite3").verbose()
+
+
+twit.get('users/search', { q: keyword, page: randPage, count: 2},
+function (err, usersData, response) {
+  if (err){
+    console.log ("Hit an error trying to get users in a search! "+err)
+    return
+  }
+
+  usersData.forEach(function FaveAndFollow(user, index, array){
+    twit.get('statuses/user_timeline', //don't forget to always use 'id_str'!!
+    { id: user.id_str, count: 9, include_rts: true, include_replies: true },
+      function (err, userTweets, response){
+        userTweets.forEach(function FaveWhatsFaved(tweet){
+          //only fave things that at least two others have faved. To protect from faving 'hey guys my grandma died'
           if (tweet.favorite_count>2){
-            console.log (tweet.id_str)
             twit.post('favorites/create', { id : tweet.id_str }, function(err, data, response){
-              console.log (tweet.id_str)
-
-              if (err)console.log ("error! "+err)
+              if (err){
+                console.log ("error! while faving! "+err)
+                return
+              }
               console.log("Faved! Text was: "+tweet.text)
             })
           }
         })
+      //follow that person,
+      // twit.post('friendships/create', { id: user.id_str }, function (err, data, response) {
+      //   if (err){
+      //     console.log ("error while trying to add friend! "+err)
+      //     return
+      //   }
+      //   //console.log(user.id_str)
+      //   //console.log("trying to follow "+user.name)
+      // })
 
-      //friend that person,
-      twit.post('friendships/create', { id: user.id_str }, function (err, data, response) {
-        if (err)console.log ("error! "+err)
-      })
     })
   })
+  SaveAutofollows(usersData)
 })
-
 
 function randomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
+}
+
+
+//TODO: make this work.
+function SaveAutofollows(userData){
+  //log the people we just autofollowed
+  db.serialize(function() {
+    var stmt = db.prepare("INSERT INTO autofollows VALUES (?)")
+
+
+    userData.forEach(function SaveToDB(user){
+      stmt.run()
+    })
+
+    stmt.finalize();
+
+  })
+  db.close()
 }

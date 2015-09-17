@@ -1,7 +1,7 @@
 var Twit = require('twit')
-
 //for debuggery. Leaving it in for now....
 var util = require('util')
+
 var config = require('./config.js')
 var twit = new Twit(config)
 

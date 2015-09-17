@@ -20,5 +20,9 @@
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-shell": "^0.4.3"
+  },
+  "dependencies": {
+    "sqlite3": "^3.1.0",
+    "twit": "^2.1.0"
   }
 }

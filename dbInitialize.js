@@ -14,10 +14,10 @@ var db = new sqlite3.Database(file)
 
 db.serialize(function() {
   if(!exists) {
-    db.run("CREATE TABLE Stuff (thing TEXT)")
+    db.run("CREATE TABLE autofollows (thing TEXT, id_str TEXT)")
   }
 
-        var stmt = db.prepare("INSERT INTO Stuff VALUES (?)")
+        var stmt = db.prepare("INSERT INTO autofollows VALUES (?)")
 
 //Insert random data
   var rnd;

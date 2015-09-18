@@ -25,10 +25,13 @@ faves tweets more distantly in the past.
 
 * ~~find their last 10 or so random tweets~~
 
-* Like a tweet by that person that already has likes - this should be working but I'm not seeing it work.. what gives...
+* ~~Like a tweet by that person that already has likes - this should be working but I'm not seeing it ~~
 
 * ~~follow those ID's~~
 
-* store what was followed (liteweight Redis?, just plaintext?)
+* store all 'follows' in a database (sqlite3)
+* add a function to establish whether your 'follows' follow you
+* unfollow those who haven't followed you after 5 days
+* go back and add a check before following new people that we haven't tried all this before.
 
 * Gulp to test the two above

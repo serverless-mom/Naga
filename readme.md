@@ -30,6 +30,7 @@ faves tweets more distantly in the past.
 * ~~follow those ID's~~
 
 * store all 'follows' in a database (sqlite3)
+
 * add a function to establish whether your 'follows' follow you
 * unfollow those who haven't followed you after 5 days
 * go back and add a check before following new people that we haven't tried all this before.

@@ -25,7 +25,7 @@ faves tweets more distantly in the past.
 
 * ~~find their last 10 or so random tweets~~
 
-* ~~Like a tweet by that person that already has likes - this should be working but I'm not seeing it~~
+* ~~Like a tweet by that person that already has likes~~
 
 * ~~follow those ID's~~
 

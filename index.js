@@ -3,6 +3,7 @@ var fs = require("fs")
 var sqlite3 = require("sqlite3").verbose()
 var config = require('./config.js')
 var twit = new Twit(config)
+var strftime = require('strftime')
 
 var keyword = 'node'
 //generate a random 'page' to view
@@ -33,23 +34,21 @@ function (err, usersData, response) {
         userTweets.forEach(function FaveWhatsFaved(tweet){
           //only fave things that at least two others have faved. To protect from faving 'hey guys my grandma died'
           if (tweet.favorite_count>2){
-            twit.post('favorites/create', { id : tweet.id_str }, function(err, data, response){
-              if (err){
-                console.log ("error! while faving! "+err)
-                return
-              }
-              console.log("Faved! Text was: "+tweet.text)
-            })
+            // twit.post('favorites/create', { id : tweet.id_str }, function(err, data, response){
+            //   if (err){
+            //     console.log ("error! while faving! "+err)
+            //     return
+            //   }
+            //   //console.log("Faved! Text was: "+tweet.text)
+            // })
           }
         })
-      //follow that person,
+      //follow that person
       // twit.post('friendships/create', { id: user.id_str }, function (err, data, response) {
       //   if (err){
       //     console.log ("error while trying to add friend! "+err)
       //     return
       //   }
-      //   //console.log(user.id_str)
-      //   //console.log("trying to follow "+user.name)
       // })
 
     })
@@ -62,18 +61,26 @@ function randomInt (low, high) {
 }
 
 
-//TODO: make this work.
+
 function SaveAutofollows(userData){
   //log the people we just autofollowed
   db.serialize(function() {
-    var stmt = db.prepare("INSERT INTO autofollows VALUES (?)")
-
+    var stmt = db.prepare("INSERT INTO autofollows (name, twitterUserID, followDate) VALUES (?,?,?)")
 
     userData.forEach(function SaveToDB(user){
-      stmt.run()
+      var now = Date.now()
+      console.log(now)
+      stmt.run([user.name, user.id, now])
     })
 
     stmt.finalize();
+    db.each("SELECT rowid AS id, name, followDate FROM Autofollows", function(err, row) {
+      var readableDate = new Date (row.followDate)
+      console.log(row.id + ": " + row.name + " followed on: "+readableDate);
+
+    });
+
+
 
   })
   db.close()

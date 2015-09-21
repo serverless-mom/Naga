@@ -15,11 +15,23 @@ var db = new sqlite3.Database(file)
 db.serialize(function() {
   if(!exists) {
     //sure hope these data types work...
-    db.run("CREATE TABLE autofollows (name TEXT, twitterUserID TEXT, followDate INTEGER")
+    db.run("CREATE TABLE Autofollows (name TEXT, twitterUserID TEXT, followDate INTEGER)")
   }
 
-stmt.finalize();
+  var stmt = db.prepare("INSERT INTO Autofollows (name, twitterUserID, followDate) VALUES (?, ?, ?)");
 
-})
+  //create records that are 3 days in the past
+  var rightNow = new Date()
+  rightNow.setDate(3)
+  stmt.run(["steve", "982734987239847897", rightNow]);
+
+  stmt.finalize();
+  db.each("SELECT rowid AS id, name, followDate FROM Autofollows", function(err, row) {
+    var readableDate = new Date (row.followDate)
+    console.log(row.id + ": " + row.name + " Followed on: " + readableDate);
+  });
+});
+
+
 
 db.close()

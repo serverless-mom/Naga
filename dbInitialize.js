@@ -20,10 +20,10 @@ db.serialize(function() {
 
   var stmt = db.prepare("INSERT INTO Autofollows (name, twitterUserID, followDate) VALUES (?, ?, ?)");
 
-  //create records that are 3 days in the past
-  var rightNow = new Date()
-  rightNow.setDate(3)
-  stmt.run(["steve", "982734987239847897", rightNow]);
+  //create records that are 3 days in the past (this might mess up on the 1st-3rd ¯\_(ツ)_/¯
+  var threeDaysAgo = new Date()
+  threeDaysAgo.setDate(threeDaysAgo.getDate()-3)
+  stmt.run(["NodeBotsAU", "2154068192", threeDaysAgo]);
 
   stmt.finalize();
   db.each("SELECT rowid AS id, name, followDate FROM Autofollows", function(err, row) {

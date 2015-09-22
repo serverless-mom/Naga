@@ -26,7 +26,6 @@ function (err, usersData, response) {
     console.log ("Hit an error trying to get users in a search! "+err)
     return
   }
-
   usersData.forEach(function FaveAndFollow(user, index, array){
     twit.get('statuses/user_timeline', //don't forget to always use 'id_str'!!
     { id: user.id_str, count: 9, include_rts: true, include_replies: true },
@@ -53,7 +52,9 @@ function (err, usersData, response) {
 
     })
   })
-  SaveAutofollows(usersData)
+  //SaveAutofollows(usersData)
+  UnfollowTraitors()
+  db.close()
 })
 
 function randomInt (low, high) {
@@ -70,18 +71,63 @@ function SaveAutofollows(userData){
     userData.forEach(function SaveToDB(user){
       var now = Date.now()
       console.log(now)
-      stmt.run([user.name, user.id, now])
+      stmt.run([user.name, user.id_str, now])
     })
 
     stmt.finalize();
     db.each("SELECT rowid AS id, name, followDate FROM Autofollows", function(err, row) {
+      if(err)console.log ("hit an error! it was "+err)
       var readableDate = new Date (row.followDate)
-      console.log(row.id + ": " + row.name + " followed on: "+readableDate);
+      console.log(row.id + ": " + row.name + " followed on: "+readableDate)
 
     });
 
 
 
   })
-  db.close()
+}
+
+function UnfollowTraitors(){
+  oldIDs = []
+  traitorIDs = []
+  var today = new Date()
+  db.serialize(function() {
+  db.each("SELECT twitterUserID AS id, name, followDate FROM Autofollows", function(err, row) {
+    if(err)console.log ("hit an error! it was "+err)
+    var readableDate = new Date (row.followDate)
+    if (((today - row.followDate)/1000/60/60/24)>2){
+      //console.log ("Found a traitor! "+row.id + ": " + row.name + " followed on: "+readableDate)
+      oldIDs.push(row.id)
+    }
+  }, function IdentifyNonFollowers(){
+    var oldIdsString = oldIDs.join()
+    //console.log (oldIdsString)
+    twit.get('friendships/lookup', { user_id : oldIdsString}, function (err, friendships, response) {
+      if (err){
+        console.log ("error while trying to query friends! "+err)
+        return
+      }
+      var numberOfFriendships = friendships.length
+      var i = 0;
+      friendships.forEach(function (user){
+        i ++
+        if(!!user.connections.followed_by == false){
+          traitorIDs.push(user.id_str)
+          twit.post('friendships/destroy', { id: user.id_str }, function (err, data, response) {
+            if (err){
+              console.log ("error while trying to add friend! "+err)
+              return
+            }
+            console.log ("unfollowed "+user.name)
+          })
+        }
+        if (i == numberOfFriendships){
+          console.log (traitorIDs)
+          id = traitorIDs [0]
+          db.run("DELETE FROM table_name WHERE twitterUserID=?", id)
+        }
+      })
+    })
+  })
+})
 }

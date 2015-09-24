@@ -3,22 +3,31 @@ var fs = require("fs")
 var sqlite3 = require("sqlite3").verbose()
 var auth = require('./config.js')
 var twit = new Twit(auth)
-var strftime = require('strftime')
-//keyword with which to find peeps to follow
-var keyword = 'node'
-//generate a random 'page' to view
-var randPage = randomInt(1,100)
 var file = "test.db"
 var exists = fs.existsSync(file)
+var sqlite3 = require("sqlite3").verbose()
 var db = new sqlite3.Database(file)
+var bunyan = require('bunyan');
+
+//keyword with which to find peeps to follow
+var keyword = 'node'
+// selects a random page of users from search results
+var randPage = RandomInt (1, 100)
+// How many days to people have to follow us back before we unfollow?
+var followDays = 3
 
 if(!exists) {
   console.log("Creating DB file.")
   fs.openSync(file, "w")
 }
 
-var sqlite3 = require("sqlite3").verbose()
-
+var log = bunyan.createLogger({
+    name: 'naga',
+    streams: [{
+        path: 'naga.log',
+        // `type: 'file'` is implied
+    }]
+});
 
 twit.get('users/search', { q: keyword, page: randPage, count: 2},
 function (err, usersData, response) {
@@ -32,19 +41,19 @@ function (err, usersData, response) {
       function (err, userTweets, response){
         console.log (userTweets)
         userTweets.forEach(function FaveWhatsFaved(tweet){
-          //only fave things that at least two others have faved. To protect from faving 'hey guys my grandma died'
+        //only fave things that at least two others have faved.
+        //To protect from faving 'hey guys my grandma died'
           if (tweet.favorite_count>2)Fave(tweet)
         })
       //follow that person
       Follow(user)
-
     })
   })
   SaveAutofollows(usersData)
   UnfollowTraitors()
 })
 
-function randomInt (low, high) {
+function RandomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
 
@@ -73,7 +82,7 @@ function UnfollowTraitors(){
   db.each("SELECT twitterUserID AS id, name, followDate FROM Autofollows", function(err, row) {
     if(err)console.log ("hit an error! it was "+err)
     var readableDate = new Date (row.followDate)
-    if (((today - row.followDate)/1000/60/60/24)>4){
+    if (((today - row.followDate)/1000/60/60/24)>followDays){
       console.log ("Found a traitor! "+row.id + ": " + row.name + " followed on: "+readableDate)
       oldIDs.push(row.id)
     }

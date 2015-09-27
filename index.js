@@ -14,7 +14,10 @@ var keyword = 'node'
 // selects a random page of users from search results
 var randPage = RandomInt (1, 100)
 // How many days to people have to follow us back before we unfollow?
-var followDays = 3
+var followDays = 5
+
+var followedCount = 0
+var unfollowedCount = 0
 
 if(!exists) {
   console.log("Creating DB file.")
@@ -46,6 +49,7 @@ function (err, usersData, response) {
           if (tweet.favorite_count>2)Fave(tweet)
         })
       //follow that person
+      followedCount ++
       Follow(user)
     })
   })
@@ -99,13 +103,17 @@ function UnfollowTraitors(){
         i ++
         if(!!user.connections.followed_by == false){
           traitorIDs.push(user.id_str)
-          UnFollow(user)
+          unfollowedCount ++
+          Unfollow(user)
         }
         if (i == numberOfFriendships){
           log.info ("trying to delete these traitors from the DB " + traitorIDs)
           traitorIDs.forEach(function(id){
             db.run("DELETE FROM Autofollows WHERE twitterUserID=?", id)
-          }, function(){db.close()})
+          }, function(){
+            db.close()
+            console.log ("followed "+followedCount+", unfollowed "+unfollowedCount+" users." )
+          })
         }
       })
     })
@@ -121,7 +129,7 @@ function TableDump(){
   })
 }
 
-function UnFollow(user){
+function Unfollow(user){
   twit.post('friendships/destroy', { id: user.id_str }, function (err, data, response) {
     if (err){
       log.info ("error while trying to add friend! "+err)

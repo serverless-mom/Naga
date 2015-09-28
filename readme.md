@@ -11,28 +11,18 @@ can automatically figure out who might be related to your account.
 finds 10 good-looking targets, rejecting anyone with a follwing/follower ratio of less than .5
 faves tweets more distantly in the past.
 
+## Installation:
 
+Create a 'config.js' file at the root of the install with the following:
 
-## milestones:
+```
+module.exports = {
+        consumer_key: ''
+      , consumer_secret: ''
+      , access_token: ''
+      , access_token_secret: ''
+}
 
-* ~~Make an app that can authenticate and send command to the Twitter api~~
+```
 
-* ~~get some search results of users/tweets~~
-
-* ~~Gulp to test this~~
-
-* ~~turn those search results into a nice orderly array of ID's~~
-
-* ~~find their last 10 or so random tweets~~
-
-* ~~Like a tweet by that person that already has likes~~
-
-* ~~follow those ID's~~
-
-* store all 'follows' in a database (sqlite3)
-
-* add a function to establish whether your 'follows' follow you
-* unfollow those who haven't followed you after 5 days
-* go back and add a check before following new people that we haven't tried all this before.
-
-* Gulp to test the two above
+However often you want to run `node index.js` and see your following count climb. Run five or so days later to trim those who didn't follow you back, the traitors. 

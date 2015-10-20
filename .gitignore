@@ -30,3 +30,4 @@ node_modules
 
 # Sqlite3's Databases
 *.db
+dump.rdb

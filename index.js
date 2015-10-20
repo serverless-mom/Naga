@@ -42,7 +42,7 @@ function (err, usersData, response) {
     twit.get('statuses/user_timeline', //don't forget to always use 'id_str'!!
     { id: user.id_str, count: 10, include_rts: true, include_replies: true },
       function (err, userTweets, response){
-        log.info(userTweets)
+        //log.info(userTweets)
         userTweets.forEach(function FaveWhatsFaved(tweet){
         //only fave things that at least two others have faved.
         //To protect from faving 'hey guys my grandma died'
@@ -55,6 +55,7 @@ function (err, usersData, response) {
   })
   SaveAutofollows(usersData)
   UnfollowTraitors()
+  console.log ("complete maybe? Async is hard...")
 })
 
 function RandomInt (low, high) {

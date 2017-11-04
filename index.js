@@ -1,6 +1,17 @@
 var Twit = require('twit')
 var fs = require("fs")
-var auth = require('./config.js')
+if (process.env.ACCESS_TOKEN) {
+  auth = {
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  }
+
+} else {
+  var auth = require('./config.js')
+}
+
 var twit = new Twit(auth)
 
 var bunyan = require('bunyan');
@@ -61,7 +72,7 @@ twit.get('users/search', {
           }
           //follow that person
           followedCount++
-          // Follow(user)
+          Follow(user)
         })
     })
 

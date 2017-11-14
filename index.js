@@ -1,12 +1,12 @@
 var Twit = require('twit')
 var fs = require("fs")
-var auth = {
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret: process.env.CONSUMER_SECRET,
-    access_token: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
-  }
-  // var auth = require('./config.js')
+  // var auth = {
+  //     consumer_key: process.env.CONSUMER_KEY,
+  //     consumer_secret: process.env.CONSUMER_SECRET,
+  //     access_token: process.env.ACCESS_TOKEN,
+  //     access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  //   }
+var auth = require('./config.js')
 
 
 var twit = new Twit(auth)
@@ -16,7 +16,7 @@ var bunyan = require('bunyan');
 //keyword with which to find peeps to follow
 var keywords = ['node', 'vaporwave', 'robotics', 'javascript', 'alterconf',
   'emberjs', 'ayo.js', '3dprinting', 'makerbot', 'enabling the future',
-  'prosthetics'
+  'prosthetics', 'antifascism', 'she/her', 'they/them', 'mx', 'latin@'
 ]
 var keyword = keywords[RandomInt(0, keywords.length)]
   // selects a random page of users from search results
@@ -79,15 +79,16 @@ function RandomInt(low, high) {
   return Math.floor(Math.random() * (high - low) + low);
 }
 
+// load last hundred follows, look up 40 - 100, pass that data on.
 twit.get('friends/ids', {
   screen_name: "tobyfee",
-  count: 40
-}, function(err, followers, response) {
+  count: 100
+}, function(err, friends, response) {
   if (err) {
     log.error("error while trying to query friends! " + err)
     return
   }
-  var recentFriends = followers.ids.slice(20).join();
+  var recentFriends = friends.ids.slice(followedCount * 5).join();
   twit.get('friendships/lookup', {
       user_id: recentFriends
     })
@@ -99,10 +100,39 @@ twit.get('friends/ids', {
     })
 });
 
+twit.get('followers/ids', {
+  screen_name: "tobyfee",
+  count: 50
+}, function(err, followers, response) {
+  if (err) {
+    log.error("error while trying to query friends! " + err)
+    return
+  }
+  var recentFollowers = followers.ids.join();
+  twit.get('friendships/lookup', {
+      user_id: recentFollowers
+    })
+    .catch(function(err) {
+      log.error('caught error', err.stack)
+    })
+    .then(function(result) {
+      FollowBack(result.data);
+    })
+});
+
 function UnfollowNonFollowers(friendArray) {
   friendArray.forEach(function(friend) {
     if (friend.connections.indexOf('followed_by') < 0) {
       Unfollow(friend);
+    }
+  })
+}
+
+function FollowBack(followerArray) {
+  followerArray.forEach(function(follower) {
+    if (follower.connections.indexOf('following') < 0) {
+      console.log('following new follower: ' + follower.name)
+      Follow(follower);
     }
   })
 }
